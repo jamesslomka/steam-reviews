@@ -6,7 +6,6 @@ from bs4 import BeautifulSoup
 with open("steamid.csv","r") as file:
 	reader = csv.reader(file)
 	userID = 1
-
 	for steamID in reader:
 		print("Checking user " + str(userID) + " with steamID:  " + str(steamID[0]) + "\n")
 		userID = userID + 1
@@ -17,28 +16,28 @@ with open("steamid.csv","r") as file:
 		reviews = []
 		game_url = []
 		game_title = []
-		dateL = []
+		date = []
+
 		checkReviews = soup.find_all('div', {'class': 'rightcol'})
-		title = soup.find_all('div', {'class':'leftcol'})
-		date = soup.find_all('div', {'class': 'posted'})
+		title = soup.find_all('div', {'class': 'leftcol'})
+		posted = soup.find_all('div', {'class': 'posted'})
 		time = soup.find_all('div', {'class': 'hours'})
 
 		if not checkReviews:
 			print("***** No reviews ******* \n")
 		else:
-			print("----- Reviews Found ------\n")
+			print("----- "+ str(len(checkReviews)) + " Reviews Found ------\n")
 			for counter in range(len(checkReviews)):
 				# getting reviews
 				reviews.append(checkReviews[counter].find('div',{'class': 'content'}).get_text())
 				print(reviews[counter].strip() + "\n")
-				# get game title
+				# get game URL
 				game_url.append(title[counter].find('a')['href'])
 				response = requests.get(game_url[counter])
-				soup = BeautifulSoup(response.content,"html.parser")
+				# get game title from title tag
+				soup = BeautifulSoup(response.content, "html.parser")
 				game_title.append(soup.title.string)
 				print(game_title[counter] + "\n")
 				# getting date
-				dateL.append(date[counter].get_text())
-				print(dateL[counter].strip())
-				# getting hours played
-					#  --> add hours <--
+				date.append(posted[counter].get_text())
+				print(date[counter].strip() + "\n")
