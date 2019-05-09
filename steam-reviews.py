@@ -1,10 +1,12 @@
+#!/usr/bin/python3
+
 import requests
 import unicodecsv as csv
 from bs4 import BeautifulSoup
 with open("steam_data.csv", 'wb') as f:
     writer = csv.writer(f, dialect='excel')
     writer.writerow(["UserID", "SteamID", "Game Title", "AppID", "Recommended?", "Review", "Date Posted", "Hours Played"])
-    
+
 # getting userIDs from csv file
 with open("steamid.csv",'rb') as file:
     reader = csv.reader(file)
@@ -16,8 +18,8 @@ with open("steamid.csv",'rb') as file:
         if userID <= 10000:
             print(userID)
             x = 1
-            # hardcoded assuming no more than 999 reviews 
-            for x in range(1,100):          
+            # hardcoded assuming no more than 999 reviews
+            for x in range(1,100):
                 url = "https://steamcommunity.com/profiles/" + steamID[0] + "/recommended/?p=" + str(x)
                 x = x + 1
                 user = userID - 1
@@ -36,12 +38,12 @@ with open("steamid.csv",'rb') as file:
                 date = soup.find_all('div', {'class': 'posted'})
                 time = soup.find_all('div', {'class': 'hours'})
                 getAppid = soup.find_all('div', {'class':'title'})
-                
+
                 if not checkReviews:
                     print("***** No Reviews *****\n")
                     break
-        
-                else: 
+
+                else:
                     print("----- Reviews Found ------\n")
                     for counter in range(len(checkReviews)):
                         try:
@@ -50,7 +52,7 @@ with open("steamid.csv",'rb') as file:
                             response = requests.get(game_url[counter])
                             soup = BeautifulSoup(response.content,"html.parser")
                             game = soup.title.string.replace("™","")
-                            game = game.replace("®","") 
+                            game = game.replace("®","")
                             game = game.replace("Steam Community :: ", "")
                             game_title.append(game)
                             print(game_title[counter] + "\n")
@@ -85,9 +87,9 @@ with open("steamid.csv",'rb') as file:
                     writer = csv.writer(f, encoding='utf-8')
                     for i in range(len(game_title)):
                         try:
-                            writer.writerow([user, steamID[0], game_title[i], appid[i], recommended[i], reviews[i], dateL[i], hours[i]]) 
+                            writer.writerow([user, steamID[0], game_title[i], appid[i], recommended[i], reviews[i], dateL[i], hours[i]])
                         except UnicodeEncodeError:
                             try:
-                                writer.writerow([user, steamID[0], game_title[i], appid[i], recommended[i], "could not encode text", dateL[i], hours[i]])            
+                                writer.writerow([user, steamID[0], game_title[i], appid[i], recommended[i], "could not encode text", dateL[i], hours[i]])
                             except UnicodeEncodeError:
                                 pass
