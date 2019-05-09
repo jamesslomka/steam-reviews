@@ -30,4 +30,4 @@ HELP.md
 
 ### Python ###
 .pyc
-env
+env/
